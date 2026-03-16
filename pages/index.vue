@@ -1,10 +1,22 @@
 <script setup lang="ts">
-const sentinel = ref<HTMLElement | null>(null)
+import type { GithubRepo } from '~/types/github'
+
+const sentinel = ref<HTMLElement | null>(null) // 用來辨識 底部觸發 更新
 const dropdown = ref<HTMLElement | null>(null)
 const users: string[] = ['waittinghsu', 'yyx990803']
 const open = ref(false)
 const showUser = ref<string>('waittinghsu')
-
+const repos = ref<GithubRepo[]>(Array.from({ length: 10 }).map((_, i) => {
+  return {
+    id: i,
+    name: `GitHub Repo ${i}`,
+    language: 'JavaScript',
+    updated_at: '2023-09-01T12:00:00Z',
+    stargazers_count: 2,
+    description: `omega ${i}`,
+    fork: false,
+  } as GithubRepo
+}))
 const avatar = computed(() => {
   return `https://github.com/${showUser.value}.png`
 })
@@ -43,7 +55,7 @@ function setUser(name: string) {
     <main class="max-w-3xl mx-auto px-4 py-6">
       <div class="flex flex-col gap-3">
         <RepoCard
-          v-for="repo in [{}]"
+          v-for="repo in repos"
           :key="repo.id"
           :repo="repo"
         />

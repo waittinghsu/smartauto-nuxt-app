@@ -7,7 +7,7 @@ defineProps<{
 </script>
 
 <template>
-  <!--  :href="repo.html_url" -->
+  <!-- 名字 星星數量  說明 更新時間 使用語言 repo網址 -->
   <a
     target="_blank"
     rel="noopener noreferrer"
