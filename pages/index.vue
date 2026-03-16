@@ -24,6 +24,19 @@ function setUser(name: string) {
   showUser.value = name
   open.value = false
 }
+
+let observer: IntersectionObserver | null = null
+onMounted(() => {
+  // 監控
+  observer = new IntersectionObserver((entries) => {
+    if (entries[0]?.isIntersecting)
+      console.log('observer')
+  })
+
+  // 開始觀察 sentinel
+  if (sentinel.value)
+    observer.observe(sentinel.value)
+})
 </script>
 
 <template>
@@ -61,6 +74,8 @@ function setUser(name: string) {
         />
       </div>
       {{ avatar }}
+      <!-- Sentinel -->
+      <div ref="sentinel" class="h-1" />
     </main>
   </div>
 </template>
