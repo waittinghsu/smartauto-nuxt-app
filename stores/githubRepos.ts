@@ -2,6 +2,7 @@ import type { GithubRepo } from '~/types/github'
 
 interface UserReposState {
   repos: GithubRepo[]
+  idSet: Set<number>
   page: number
   hasMore: boolean
   loading: boolean
@@ -16,13 +17,14 @@ export const useGithubReposStore = defineStore('githubRepos', () => {
     if (!cache.value[username]) {
       cache.value[username] = {
         repos: [],
+        idSet: new Set(),
         page: 1,
         hasMore: true,
         loading: false,
         error: null,
       }
     }
-    return cache.value[username]
+    return cache.value[username] as UserReposState
   }
 
   return { cache, getOrInit }

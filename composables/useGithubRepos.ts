@@ -3,7 +3,7 @@ import type { GithubRepo } from '~/types/github'
 export function useGithubRepos(username: Ref<string>) {
   const store = useGithubReposStore()
   const state = computed(() => store.getOrInit(username.value))
-  const config = useRuntimeConfig() // 拿config 配置檔案
+  const config = useRuntimeConfig()
 
   // 取更多
   async function loadMore() {
@@ -33,11 +33,26 @@ export function useGithubRepos(username: Ref<string>) {
       if (data.length < 10)// 假設數量少於 10 表示沒有下一頁了
         userReposCache.hasMore = false
 
-      userReposCache.repos.push(...data)
+      const newRepos = data.filter(repo => !userReposCache.idSet.has(repo.id))
+      newRepos.forEach((repo) => {
+        userReposCache.idSet.add(repo.id)
+        userReposCache.repos.push(repo)
+      })
       userReposCache.page++
     }
-    catch {
-      userReposCache.error = '載入失敗，請稍後再試'
+    catch (e: unknown) {
+      // console.log(e.data.message)
+      // 拋出的是 FetchError，有 data 屬性
+      if (typeof e === 'object' && e !== null && 'data' in e) {
+        const fetchError = e as { data?: { message?: string } }
+        userReposCache.error = fetchError.data?.message || '載入失敗，請稍後再試'
+      }
+      else if (e instanceof Error) {
+        userReposCache.error = e.message
+      }
+      else {
+        userReposCache.error = '載入失敗，請稍後再試'
+      }
     }
     finally {
       userReposCache.loading = false
@@ -46,7 +61,9 @@ export function useGithubRepos(username: Ref<string>) {
 
   return {
     repos: computed(() => state.value.repos),
+    loading: computed(() => state.value.loading),
     hasMore: computed(() => state.value.hasMore),
+    error: computed(() => state.value.error),
     loadMore,
   }
 }
