@@ -3,7 +3,7 @@ import type { GithubRepo } from '~/types/github'
 export function useGithubRepos(username: Ref<string>) {
   const store = useGithubReposStore()
   const state = computed(() => store.getOrInit(username.value))
-  const config = useRuntimeConfig()
+  const config = useRuntimeConfig() // 拿config 配置檔案
 
   // 取更多
   async function loadMore() {

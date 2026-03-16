@@ -1,22 +1,12 @@
 <script setup lang="ts">
-import type { GithubRepo } from '~/types/github'
-
 const sentinel = ref<HTMLElement | null>(null) // 用來辨識 底部觸發 更新
 const dropdown = ref<HTMLElement | null>(null)
 const users: string[] = ['waittinghsu', 'yyx990803']
 const open = ref(false)
 const showUser = ref<string>('waittinghsu')
-const repos = ref<GithubRepo[]>(Array.from({ length: 10 }).map((_, i) => {
-  return {
-    id: i,
-    name: `GitHub Repo ${i}`,
-    language: 'JavaScript',
-    updated_at: '2023-09-01T12:00:00Z',
-    stargazers_count: 2,
-    description: `omega ${i}`,
-    fork: false,
-  } as GithubRepo
-}))
+
+const { repos, loadMore } = useGithubRepos(showUser)
+
 const avatar = computed(() => {
   return `https://github.com/${showUser.value}.png`
 })
@@ -27,10 +17,11 @@ function setUser(name: string) {
 
 let observer: IntersectionObserver | null = null
 onMounted(() => {
+  loadMore()
   // 監控
   observer = new IntersectionObserver((entries) => {
     if (entries[0]?.isIntersecting)
-      console.log('observer')
+      loadMore()
   })
 
   // 開始觀察 sentinel
@@ -73,7 +64,6 @@ onMounted(() => {
           :repo="repo"
         />
       </div>
-      {{ avatar }}
       <!-- Sentinel -->
       <div ref="sentinel" class="h-1" />
     </main>

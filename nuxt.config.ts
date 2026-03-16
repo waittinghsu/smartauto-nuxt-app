@@ -9,7 +9,11 @@ export default defineNuxtConfig({
   devServer: {
     port: 1111,
   },
-
+  runtimeConfig: {
+    public: {
+      githubToken: '', // 從 NUXT_PUBLIC_GITHUB_TOKEN 自動讀取
+    },
+  },
   typescript: {
     strict: true,
     typeCheck: false,
